@@ -21,6 +21,7 @@
                     <div class="row justify-content-center">
                         <div class="col-md-6">
                             <form id="employee-form">
+                                <input type="hidden" id="eid"> <!-- Add hidden input for eid -->
                                 <div class="mb-3">
                                     <label for="ename" class="form-label">Employee Name</label>
                                     <input type="text" class="form-control" id="ename" placeholder="Enter name" required>
@@ -38,11 +39,14 @@
                                     <input type="text" class="form-control" id="edepartment" placeholder="Enter department" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="estatus" class="form-label">Employee estatus</label>
+                                    <label for="estatus" class="form-label">Employee Status</label>
                                     <input type="text" class="form-control" id="estatus" placeholder="Enter Status" required>
                                 </div>
-                                <div>   
+                                <div>
                                     <button type="button" id="save-employee" class="btn btn-primary">Save Employee</button>
+                                    <button type="button" id="update-employee" class="btn btn-warning">Update Employee</button>
+                                    <button type="button" id="delete-employee" class="btn btn-danger">Delete Employee</button>
+                                    <button type="button" id="refresh-employee" class="btn btn-secondary">Refresh Employee</button>
                                 </div>
                             </form>
                         </div>
@@ -70,7 +74,7 @@
                         <th>Status</th>
                     </tr>
                     </thead>
-                    <tbody id="employee-table tbody">
+                    <tbody id="employee-table-tbody">
                     <!-- Dynamic rows will be inserted here using JS -->
                     </tbody>
                 </table>

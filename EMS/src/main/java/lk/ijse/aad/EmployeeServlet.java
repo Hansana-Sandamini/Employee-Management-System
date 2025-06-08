@@ -75,11 +75,11 @@ public class EmployeeServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ObjectMapper mapper = new ObjectMapper();
-        resp.setContentType("application/json");
+        response.setContentType("application/json");
 
-        ServletContext sc = req.getServletContext();
+        ServletContext sc = request.getServletContext();
         BasicDataSource ds = (BasicDataSource) sc.getAttribute("ds");
 
         try (Connection connection = ds.getConnection()) {
@@ -102,8 +102,8 @@ public class EmployeeServlet extends HttpServlet {
                 employees.add(emp);
             }
 
-            PrintWriter out = resp.getWriter();
-            resp.setStatus(HttpServletResponse.SC_OK);
+            PrintWriter out = response.getWriter();
+            response.setStatus(HttpServletResponse.SC_OK);
             mapper.writeValue(out, Map.of(
                     "code", "200",
                     "status", "success",
@@ -111,12 +111,121 @@ public class EmployeeServlet extends HttpServlet {
             ));
 
         } catch (Exception e) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            mapper.writeValue(resp.getWriter(), Map.of(
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            mapper.writeValue(response.getWriter(), Map.of(
                     "code", "500",
                     "status", "error",
                     "message", "Internal server error!"
             ));
         }
     }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> user = mapper.readValue(request.getInputStream(), Map.class);
+
+        ServletContext sc = request.getServletContext();
+        BasicDataSource ds = (BasicDataSource) sc.getAttribute("ds");
+
+        try (Connection connection = ds.getConnection()) {
+            PreparedStatement pstm = connection.prepareStatement(
+                    "UPDATE employee SET ename = ?, enumber = ?, eaddress = ?, edepartment = ?, estatus = ? WHERE eid = ?"
+            );
+
+            pstm.setString(1, user.get("ename"));
+            pstm.setString(2, user.get("enumber"));
+            pstm.setString(3, user.get("eaddress"));
+            pstm.setString(4, user.get("edepartment"));
+            pstm.setString(5, user.get("estatus"));
+            pstm.setString(6, user.get("eid"));
+
+            int executed = pstm.executeUpdate();
+
+            PrintWriter out = response.getWriter();
+            response.setContentType("application/json");
+
+            if (executed > 0) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                mapper.writeValue(out, Map.of(
+                        "code", "200",
+                        "status", "success",
+                        "message", "Employee successfully updated!"
+                ));
+            } else {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                mapper.writeValue(out, Map.of(
+                        "code", "404",
+                        "status", "error",
+                        "message", "Employee not found!"
+                ));
+            }
+        } catch (SQLException e) {
+            PrintWriter out = response.getWriter();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            mapper.writeValue(out, Map.of(
+                    "code", "500",
+                    "status", "error",
+                    "message", "Internal server error!"
+            ));
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        String eid = request.getParameter("eid");
+
+        if (eid == null || eid.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            mapper.writeValue(response.getWriter(), Map.of(
+                    "code", "400",
+                    "status", "error",
+                    "message", "Employee ID is required!"
+            ));
+            return;
+        }
+
+        ServletContext sc = request.getServletContext();
+        BasicDataSource ds = (BasicDataSource) sc.getAttribute("ds");
+
+        try (Connection connection = ds.getConnection()) {
+            PreparedStatement pstm = connection.prepareStatement(
+                    "DELETE FROM employee WHERE eid = ?"
+            );
+            pstm.setString(1, eid);
+
+            int executed = pstm.executeUpdate();
+
+            PrintWriter out = response.getWriter();
+            response.setContentType("application/json");
+
+            if (executed > 0) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                mapper.writeValue(out, Map.of(
+                        "code", "200",
+                        "status", "success",
+                        "message", "Employee successfully deleted!"
+                ));
+            } else {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                mapper.writeValue(out, Map.of(
+                        "code", "404",
+                        "status", "error",
+                        "message", "Employee not found!"
+                ));
+            }
+        } catch (SQLException e) {
+            PrintWriter out = response.getWriter();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            mapper.writeValue(out, Map.of(
+                    "code", "500",
+                    "status", "error",
+                    "message", "Internal server error!"
+            ));
+            throw new RuntimeException(e);
+        }
+    }
+
 }
