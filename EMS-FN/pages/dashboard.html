@@ -13,7 +13,7 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-3 bg-secondary">side bard</div>
+            <div class="col-3 bg-secondary">side bar</div>
             <div class="col-9 bg-light">
                 <p id="welcome-message"></p>
                 <h1 class="text-center mt-5">Welcome to the Dashboard</h1>
@@ -41,6 +41,13 @@
                                 <div class="mb-3">
                                     <label for="estatus" class="form-label">Employee Status</label>
                                     <input type="text" class="form-control" id="estatus" placeholder="Enter Status" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="eimage" class="form-label">Employee Image</label>
+                                    <input type="file" class="form-control" id="eimage" accept="image/*">
+                                    <div class="mt-2">
+                                        <img id="image-preview" src="#" alt="Image Preview" style="max-width: 200px; display: none;">
+                                    </div>
                                 </div>
                                 <div>
                                     <button type="button" id="save-employee" class="btn btn-primary">Save Employee</button>
@@ -72,6 +79,7 @@
                         <th>Address</th>
                         <th>Department</th>
                         <th>Status</th>
+                        <th>Image</th> 
                     </tr>
                     </thead>
                     <tbody id="employee-table-tbody">
