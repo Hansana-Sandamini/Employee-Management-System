@@ -6,33 +6,6 @@ $(document).ready(function() {
     // Load employees on page load
     loadEmployees();
 
-    // Image preview functionality
-    $('#eimage').change(function() {
-        const file = this.files[0];
-        if (file) {
-            if (file.size > 10 * 1024 * 1024) { // 10MB limit
-                alert('Image size should be less than 10MB');
-                $(this).val('');
-                return;
-            }
-            
-            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            if (!validTypes.includes(file.type)) {
-                alert('Only JPEG, PNG, and GIF images are allowed');
-                $(this).val('');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                $('#image-preview').attr('src', e.target.result).show();
-            }
-            reader.readAsDataURL(file);
-        } else {
-            $('#image-preview').hide();
-        }
-    });
-
     // Row selection
     $(document).on("click", "#employee-table tbody tr", function() {
         if (selectedRow) {
@@ -183,7 +156,7 @@ $(document).ready(function() {
         resetForm();
     });
 
-    // Helper functions
+    // Load Employees
     function loadEmployees() {
         $.ajax({
             url: "http://localhost:8084/EMS_Web_exploded/employee",

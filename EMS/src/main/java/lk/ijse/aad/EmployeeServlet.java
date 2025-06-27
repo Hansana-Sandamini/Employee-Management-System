@@ -15,11 +15,7 @@ import java.sql.*;
 import java.util.*;
 
 @WebServlet("/employee")
-@MultipartConfig(
-        fileSizeThreshold = 1024 * 1024, // 1MB
-        maxFileSize = 1024 * 1024 * 10, // 10MB
-        maxRequestSize = 1024 * 1024 * 50 // 50MB
-)
+@MultipartConfig
 public class EmployeeServlet extends HttpServlet {
 
     private String uploadPath;
@@ -29,7 +25,7 @@ public class EmployeeServlet extends HttpServlet {
         uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
-            uploadDir.mkdir();
+            uploadDir.mkdirs();
         }
     }
 
